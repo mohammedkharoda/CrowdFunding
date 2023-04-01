@@ -15,26 +15,40 @@ pragma solidity ^0.8.9;
         }
 
         mapping(uint256 => Campaing ) public campaigns ;
+
         uint256 public numberOfCampaigns = 0;
 
-        function createCampaign(address _owner , string memory _title , string memory _description, uint256 _target, uint256 _deadline, string memory _image) public return (uint256) {
-            Campagin storage campagin = campagin[numberOfCampagin];
-            require(campagin.deadline < block.timestamp, 'The DeadLine must be a date in future')
+        function createCampaign(address _owner , string memory _title , string memory _description, uint256 _target, uint256 _deadline, string memory _image) public returns (uint256) {
+            Campaing storage campaign = campaigns[numberOfCampaigns];
 
-            campagin.owner = _owner;
-            campagin.description = _description;
-            campagin.title = _title
-            campagin.target = _target;
-            campagin.deadline = _deadline;
-            campagin.amountCollected = 0;
-            campagin.image = _image;
+            require(campaign.deadline < block.timestamp , 'The deadline should be a date in the future');
+
+            campaign.owner = _owner;
+            campaign.title = _title;
+            campaign.description = _description;
+            campaign.target = _target;
+            campaign.deadline = _deadline;
+            campaign.amountCollected = 0;
+            campaign.image = _image;
 
             numberOfCampaigns++;
-
             return numberOfCampaigns - 1;
-}
+        }
 
-        function donateCampaign() {}
+        function donateCampaign(uint256 _id) public payable {
+            uint256 amount = msg.value;
+
+            Campaing storage campaign = campaigns[_id];
+
+            campaign.donators.push(msg.sender);
+            campaign.donations.push(amount);
+
+            (bool sent,) = payable(campaign.owner).call{value:amount}("");
+
+            if(sent){
+                campaign.amountCollected = campaign.amountCollected + amount;
+            }
+        }
 
         function getDonators() {}
 
