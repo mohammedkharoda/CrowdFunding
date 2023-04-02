@@ -50,7 +50,18 @@ pragma solidity ^0.8.9;
             }
         }
 
-        function getDonators() {}
+        function getDonators(uint256 _id) view public returns (address[] memory,uint256[] memory) {
+                    return (campaigns[_id].donators,campaigns[_id].donations);
+        }
 
-        function getCampaigns() {}
+        function getCampaigns() public view returns(Campaing[]memory) {
+            Campaing[] memory allCampaings = new Campaing[](numberOfCampaigns);
+
+            for(uint i=0;i<numberOfCampaigns;i++){
+                Campaing storage item = campaigns[i]; 
+                allCampaings[i] = item;
+            }
+
+            return allCampaings;
+        }
     }
